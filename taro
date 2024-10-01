@@ -1,0 +1,168 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>camping-site</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <!-- Spring Boot Dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- Thymeleaf for templating -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <!-- Optional: Database (H2 for simplicity) -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+package com.example.campingsite;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class CampingSiteApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(CampingSiteApplication.class, args);
+    }
+
+}
+package com.example.campingsite.model;
+
+public class Campground {
+    private String name;
+    private double size;  // 平方メートル
+    private String features;
+    private int rating;  // おすすめ度 (1-5)
+
+    public Campground(String name, double size, String features, int rating) {
+        this.name = name;
+        this.size = size;
+        this.features = features;
+        this.rating = rating;
+    }
+
+    // GetterとSetter
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getSize() {
+        return size;
+    }
+
+    public void setSize(double size) {
+        this.size = size;
+    }
+
+    public String getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(String features) {
+        this.features = features;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+}
+package com.example.campingsite.controller;
+
+import com.example.campingsite.model.Campground;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Controller
+public class CampgroundController {
+
+    @GetMapping("/campgrounds")
+    public String listCampgrounds(Model model) {
+        // サンプルデータ
+        List<Campground> campgrounds = new ArrayList<>();
+        campgrounds.add(new Campground("キャンプ場A", 1000, "川沿い、自然豊か", 4));
+        campgrounds.add(new Campground("キャンプ場B", 500, "バンガロー、釣りスポット", 5));
+        campgrounds.add(new Campground("キャンプ場C", 750, "ファミリー向け、トイレ完備", 3));
+
+        model.addAttribute("campgrounds", campgrounds);
+        return "campground_list";
+    }
+}
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>道志川キャンプ場リスト</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <h1>道志川沿いのおすすめキャンプ場</h1>
+    <table>
+        <tr>
+            <th>名前</th>
+            <th>広さ (平方メートル)</th>
+            <th>特徴</th>
+            <th>おすすめ度</th>
+        </tr>
+        <tr th:each="campground : ${campgrounds}">
+            <td th:text="${campground.name}"></td>
+            <td th:text="${campground.size}"></td>
+            <td th:text="${campground.features}"></td>
+            <td th:text="${campground.rating}"></td>
+        </tr>
+    </table>
+</body>
+</html>
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: #4CAF50;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+th {
+    background-color: #f2f2f2;
+}
